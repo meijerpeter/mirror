@@ -253,50 +253,49 @@ public class BodyView extends View {
     float maxTimestampX = 0;
     float maxTimestampY = 0;
     linePath.rewind();
-    for (int i = 0; i < bodyMeasures.length; i++) {
-      BodyMeasure bodyMeasure = bodyMeasures[i];
-      long timestamp = bodyMeasure.timestamp;
-      double weight = bodyMeasure.weight;
+      for (BodyMeasure bodyMeasure : bodyMeasures) {
+          long timestamp = bodyMeasure.timestamp;
+          double weight = bodyMeasure.weight;
 
-      // Project the data point onto the available canvas.
-      float x = project(timestamp, minTimestamp, maxTimestamp, leftMargin,
-          canvas.getWidth() - rightMargin);
-      float y = project((float) weight, (float) minWeight, (float) maxWeight,
-          canvas.getHeight() - bottomMargin, topMargin);
+          // Project the data point onto the available canvas.
+          float x = project(timestamp, minTimestamp, maxTimestamp, leftMargin,
+                  canvas.getWidth() - rightMargin);
+          float y = project((float) weight, (float) minWeight, (float) maxWeight,
+                  canvas.getHeight() - bottomMargin, topMargin);
 
-      // Create a label with the weight and date, positioned as close to the data point as possible.
-      String weightLabel = String.format(Locale.US, "%.0f %s · %s", getLocalizedWeight(weight),
-          getLocalizedWeightUnit(), getLocalizedDate(timestamp));
-      float weightLabelWidth = labelPaint.measureText(weightLabel);
-      float weightLabelX = Math.min(Math.max(x - 0.5f * weightLabelWidth, 0.0f),
-          canvas.getWidth() - weightLabelWidth);
+          // Create a label with the weight and date, positioned as close to the data point as possible.
+          String weightLabel = String.format(Locale.US, "%.0f %s · %s", getLocalizedWeight(weight),
+                  getLocalizedWeightUnit(), getLocalizedDate(timestamp));
+          float weightLabelWidth = labelPaint.measureText(weightLabel);
+          float weightLabelX = Math.min(Math.max(x - 0.5f * weightLabelWidth, 0.0f),
+                  canvas.getWidth() - weightLabelWidth);
 
-      // Save the dot coordinates and the label for the maximum and minimum weights, but only once.
-      // The weight with the maximum timestamp also gets a dot.
-      if ((weight == maxWeight) && (maxWeightLabel == null)) {
-        maxWeightDotX = x;
-        maxWeightDotY = y;
-        maxWeightLabelX = weightLabelX;
-        maxWeightLabelY = labelHeight - fontMetrics.descent;
-        maxWeightLabel = weightLabel;
-      } else if ((weight == minWeight) && (minWeightLabel == null)) {
-        minWeightDotX = x;
-        minWeightDotY = y;
-        minWeightLabelX = weightLabelX;
-        minWeightLabelY = canvas.getHeight() - fontMetrics.descent;
-        minWeightLabel = weightLabel;
-      } else if (timestamp == maxTimestamp) {
-        maxTimestampX = x;
-        maxTimestampY = y;
+          // Save the dot coordinates and the label for the maximum and minimum weights, but only once.
+          // The weight with the maximum timestamp also gets a dot.
+          if ((weight == maxWeight) && (maxWeightLabel == null)) {
+              maxWeightDotX = x;
+              maxWeightDotY = y;
+              maxWeightLabelX = weightLabelX;
+              maxWeightLabelY = labelHeight - fontMetrics.descent;
+              maxWeightLabel = weightLabel;
+          } else if ((weight == minWeight) && (minWeightLabel == null)) {
+              minWeightDotX = x;
+              minWeightDotY = y;
+              minWeightLabelX = weightLabelX;
+              minWeightLabelY = canvas.getHeight() - fontMetrics.descent;
+              minWeightLabel = weightLabel;
+          } else if (timestamp == maxTimestamp) {
+              maxTimestampX = x;
+              maxTimestampY = y;
+          }
+
+          // Append to the line.
+          if (linePath.isEmpty()) {
+              linePath.moveTo(x, y);
+          } else {
+              linePath.lineTo(x, y);
+          }
       }
-
-      // Append to the line.
-      if (linePath.isEmpty()) {
-        linePath.moveTo(x, y);
-      } else {
-        linePath.lineTo(x, y);
-      }
-    }
 
     // Draw the line.
     canvas.drawPath(linePath, linePaint);

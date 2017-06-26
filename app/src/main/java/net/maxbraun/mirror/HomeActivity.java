@@ -45,7 +45,7 @@ public class HomeActivity extends Activity {
 
                         // Populate the current temperature rounded to a whole number.
                         String temperature = String.format(Locale.US, "%d°",
-                                Math.round(getLocalizedTemperature(data.currentTemperature)));
+                                Math.round(data.currentTemperature));
                         temperatureView.setText(temperature);
 
                         // Populate the 24-hour forecast summary, but strip any period at the end.
@@ -142,15 +142,13 @@ public class HomeActivity extends Activity {
     private TextView weatherSummaryView;
     private TextView precipitationView;
     private ImageView iconView;
-    private TextView[] informationViews = new TextView[INFO_VIEW_IDS.length];
+    private final TextView[] informationViews = new TextView[INFO_VIEW_IDS.length];
     private BodyView bodyView;
     private TextView commuteTextView;
     private ImageView travelModeView;
     private ImageView trafficTrendView;
 
     private Weather weather;
-    private Calendar calendar;
-    private News news;
 
     private DataUpdater<List<String>> info;
 

@@ -25,11 +25,11 @@ public class Weather extends DataUpdater<WeatherData> {
      * The time in milliseconds between API calls to update the weather.
      */
     private static final long UPDATE_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(5);
-    public static final String CELSIUS = "CELSIUS";
-    public static final String FAHRENHEIT = "FAHRENHEIT";
-    public static final String UNITS_SI = "si";
-    public static final String UNITS_US = "us";
-    public static final String UNITS_AUTO = "auto";
+    private static final String CELSIUS = "CELSIUS";
+    private static final String FAHRENHEIT = "FAHRENHEIT";
+    private static final String UNITS_SI = "si";
+    private static final String UNITS_US = "us";
+    private static final String UNITS_AUTO = "auto";
 
   /**
    * The context used to load string resources.
@@ -111,7 +111,9 @@ public class Weather extends DataUpdater<WeatherData> {
   @Override
   protected WeatherData getData() {
 
-      Location location = getLocationForWeather();
+      if (location == null) {
+          location = getLocationForWeather();
+      }
 
       String language = context.getString(R.string.language);
       String units = getUnits();
@@ -141,7 +143,7 @@ public class Weather extends DataUpdater<WeatherData> {
 
     private Location getLocationForWeather() {
 
-        Location location = null;
+        Location location;
 
         // We're using geo location by IP, because many headless Android devices don't return anything
         // useful through the usual location APIs.
@@ -164,7 +166,7 @@ public class Weather extends DataUpdater<WeatherData> {
         //retrieve unit selector
         String unitSelector = context.getString(R.string.units);
 
-        if (unitSelector == null) {
+        if (unitSelector.equals("")) {
             return UNITS_AUTO;
         }
 

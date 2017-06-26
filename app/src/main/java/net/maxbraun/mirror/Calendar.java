@@ -16,7 +16,6 @@ import android.provider.CalendarContract;
 import android.content.ContentUris;
 import android.content.ContentResolver;
 import android.util.Log;
-import android.widget.ImageView;
 
 
 /**
@@ -63,7 +62,7 @@ public class Calendar extends DataUpdater<List<String>> {
         Log.d(TAG, "Starting to look into the calendars...");
 
         Cursor cursor;
-        ContentResolver contentResolver = context.getContentResolver();
+
         final String[] colsToQuery = new String[]
                 {CalendarContract.Instances.CALENDAR_ID, CalendarContract.Instances.TITLE,
                         CalendarContract.Instances.DESCRIPTION, CalendarContract.Instances.BEGIN,
@@ -71,8 +70,8 @@ public class Calendar extends DataUpdater<List<String>> {
                         CalendarContract.Instances.EVENT_ID, CalendarContract.Instances.EVENT_TIMEZONE};
 
         long now = System.currentTimeMillis();
-        long tomorrow = now + 2*(86400l * 1000l);
-        now -= (86400l * 1000l);  // to deal with timezone issues, get several days' worth and then remove unneeded events
+        long tomorrow = now + 2*(86400L * 1000L);
+        now -= (86400L * 1000L);  // to deal with timezone issues, get several days' worth and then remove unneeded events
 
         String selection = CalendarContract.Instances.BEGIN + " >= " + now + " and " + CalendarContract.Instances.BEGIN
                 + " <= " + tomorrow + " and " + CalendarContract.Instances.VISIBLE + " = 1";
@@ -126,8 +125,9 @@ public class Calendar extends DataUpdater<List<String>> {
 
     class EventDetail { // utility class to hold details of an event
 
-        java.util.Calendar start, end;
-        String name;
+        final java.util.Calendar start;
+        final java.util.Calendar end;
+        final String name;
 
         public EventDetail(java.util.Calendar s, java.util.Calendar e, String n) {
             start = s; end = e; name = n;
@@ -146,7 +146,7 @@ public class Calendar extends DataUpdater<List<String>> {
         public String toString() {
 
             // Assume any 24-hour appointment is an all-day reminder and remove the time.
-            if (end.getTimeInMillis() >= start.getTimeInMillis() + 86400l*1000l) {
+            if (end.getTimeInMillis() >= start.getTimeInMillis() + 86400L * 1000L) {
                 return "All day: " + name;
                 //If start and end are the same, display only the start time
             } else if (end.getTimeInMillis() == start.getTimeInMillis()) {
