@@ -111,19 +111,13 @@ public class Weather extends DataUpdater<WeatherData> {
   @Override
   protected WeatherData getData() {
 
-    // Lazy load the location.
-    if (location == null) {
-      // We're using geo location by IP, because many headless Android devices don't return anything
-      // useful through the usual location APIs.
-      location = GeoLocation.getLocation();
-      Log.d(TAG, "Using location for weather: " + location);
-    }
+      Location location = getLocationForWeather();
 
-        String language = context.getString(R.string.language);
-        String units = getUnits();
+      String language = context.getString(R.string.language);
+      String units = getUnits();
 
-    // Get the latest data from the Dark Sky API.
-    String requestUrl = getRequestUrl(location);
+      // Get the latest data from the Dark Sky API.
+      String requestUrl = getRequestUrl(location, language, units);
 
     // Parse the data we are interested in from the response JSON.
     try {
