@@ -4,6 +4,16 @@
   <!-- Get the Dark Sky API key from: https://darksky.net/dev/ -->
   <string name="dark_sky_api_key">DARK_SKY_API_KEY</string>
 
+  <!-- Latitude and Longitude for the weather in your location -->
+  <string name="latitude">LAT</string>
+  <string name="longitude">LONG</string>
+
+  <!-- default language of the Dark Sky API. Lowercase only. -->
+  <string name="language">us</string>
+
+  <!-- CELSIUS OR FAHRENHEIT -->
+  <string name="units">CELSIUS</string>
+
   <!-- Get the Withings OAuth keys from: http://oauth.withings.com/api -->
   <string name="withings_consumer_key">WITHINGS_CONSUMER_KEY</string>
   <string name="withings_nonce">WITHINGS_NONCE</string>
@@ -13,4 +23,8 @@
 
   <!-- Get the Google Maps Directions API key from: https://developers.google.com/maps/documentation/directions/ -->
   <string name="google_maps_directions_api_key">GOOGLE_MAPS_DIRECTIONS_API_KEY</string>
+
+  <!-- Toggle the calendar functionality ON or OFF. When OFF, the Daily News will appear -->
+  <string name="calendar">OFF</string>
+
 </resources>

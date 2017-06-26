@@ -19,206 +19,250 @@ import net.maxbraun.mirror.Weather.WeatherData;
  * A helper class to regularly retrieve weather information.
  */
 public class Weather extends DataUpdater<WeatherData> {
-  private static final String TAG = Weather.class.getSimpleName();
-
-  /**
-   * The time in milliseconds between API calls to update the weather.
-   */
-  private static final long UPDATE_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(5);
-
-  /**
-   * The context used to load string resources.
-   */
-  private final Context context;
-
-  /**
-   * A {@link Map} from Dark Sky's icon code to the corresponding drawable resource ID.
-   */
-  private final Map<String, Integer> iconResources = new HashMap<String, Integer>() {{
-    put("clear-day", R.drawable.clear_day);
-    put("clear-night", R.drawable.clear_night);
-    put("cloudy", R.drawable.cloudy);
-    put("fog", R.drawable.fog);
-    put("partly-cloudy-day", R.drawable.partly_cloudy_day);
-    put("partly-cloudy-night", R.drawable.partly_cloudy_night);
-    put("rain", R.drawable.rain);
-    put("sleet", R.drawable.sleet);
-    put("snow", R.drawable.snow);
-    put("wind", R.drawable.wind);
-  }};
-
-  /**
-   * The current location, which is assumed to be static.
-   */
-  private Location location;
-
-  /**
-   * The data structure containing the weather information we are interested in.
-   */
-  public class WeatherData {
+    private static final String TAG = Weather.class.getSimpleName();
 
     /**
-     * The current temperature in degrees Fahrenheit.
+     * The time in milliseconds between API calls to update the weather.
      */
-    public final double currentTemperature;
+    private static final long UPDATE_INTERVAL_MILLIS = TimeUnit.MINUTES.toMillis(5);
+    public static final String CELCIUS = "CELSIUS";
+    public static final String FAHRENHEIT = "FAHRENHEIT";
+    public static final String UNITS_SI = "si";
+    public static final String UNITS_US = "us";
+    public static final String UNITS_AUTO = "auto";
 
     /**
-     * The current precipitation probability as a value between 0 and 1.
+     * The context used to load string resources.
      */
-    public final double currentPrecipitationProbability;
+    private final Context context;
 
     /**
-     * A human-readable summary of the 24-hour forecast.
+     * A {@link Map} from Dark Sky's icon code to the corresponding drawable resource ID.
      */
-    public final String daySummary;
+    private final Map<String, Integer> iconResources = new HashMap<String, Integer>() {{
+        put("clear-day", R.drawable.clear_day);
+        put("clear-night", R.drawable.clear_night);
+        put("cloudy", R.drawable.cloudy);
+        put("fog", R.drawable.fog);
+        put("partly-cloudy-day", R.drawable.partly_cloudy_day);
+        put("partly-cloudy-night", R.drawable.partly_cloudy_night);
+        put("rain", R.drawable.rain);
+        put("sleet", R.drawable.sleet);
+        put("snow", R.drawable.snow);
+        put("wind", R.drawable.wind);
+    }};
 
     /**
-     * The average precipitation probability during the 24-hour forecast as a value between 0 and 1.
+     * The current location, which is assumed to be static.
      */
-    public final double dayPrecipitationProbability;
+    private Location location;
 
     /**
-     * The resource ID of the icon representing the current weather conditions.
+     * The data structure containing the weather information we are interested in.
      */
-    public final int currentIcon;
+    public class WeatherData {
 
-    /**
-     * The resource ID of the icon representing the weather conditions during the 24-hour forecast.
-     */
-    public final int dayIcon;
+        /**
+         * The current temperature in degrees Fahrenheit.
+         */
+        public final double currentTemperature;
 
-    public WeatherData(double currentTemperature, double currentPrecipitationProbability,
-        String daySummary, double dayPrecipitationProbability, int currentIcon, int dayIcon) {
-      this.currentTemperature = currentTemperature;
-      this.currentPrecipitationProbability = currentPrecipitationProbability;
-      this.daySummary = daySummary;
-      this.dayPrecipitationProbability = dayPrecipitationProbability;
-      this.currentIcon = currentIcon;
-      this.dayIcon = dayIcon;
-    }
-  }
+        /**
+         * The current precipitation probability as a value between 0 and 1.
+         */
+        public final double currentPrecipitationProbability;
 
-  public Weather(Context context, UpdateListener<WeatherData> updateListener) {
-    super(updateListener, UPDATE_INTERVAL_MILLIS);
-    this.context = context;
-  }
+        /**
+         * A human-readable summary of the 24-hour forecast.
+         */
+        public final String daySummary;
 
-  @Override
-  protected WeatherData getData() {
+        /**
+         * The average precipitation probability during the 24-hour forecast as a value between 0 and 1.
+         */
+        public final double dayPrecipitationProbability;
 
-    // Lazy load the location.
-    if (location == null) {
-      // We're using geo location by IP, because many headless Android devices don't return anything
-      // useful through the usual location APIs.
-      location = GeoLocation.getLocation();
-      Log.d(TAG, "Using location for weather: " + location);
+        /**
+         * The resource ID of the icon representing the current weather conditions.
+         */
+        public final int currentIcon;
+
+        /**
+         * The resource ID of the icon representing the weather conditions during the 24-hour forecast.
+         */
+        public final int dayIcon;
+
+        public WeatherData(double currentTemperature, double currentPrecipitationProbability,
+                           String daySummary, double dayPrecipitationProbability, int currentIcon, int dayIcon) {
+            this.currentTemperature = currentTemperature;
+            this.currentPrecipitationProbability = currentPrecipitationProbability;
+            this.daySummary = daySummary;
+            this.dayPrecipitationProbability = dayPrecipitationProbability;
+            this.currentIcon = currentIcon;
+            this.dayIcon = dayIcon;
+        }
     }
 
-
-    // Get the latest data from the Dark Sky API.
-    String requestUrl = getRequestUrl(location);
-
-    // Parse the data we are interested in from the response JSON.
-    try {
-      JSONObject response = Network.getJson(requestUrl);
-      if (response != null) {
-        return new WeatherData(
-            parseCurrentTemperature(response),
-            parseCurrentPrecipitationProbability(response),
-            parseDaySummary(response),
-            parseDayPrecipitationProbability(response),
-            parseCurrentIcon(response),
-            parseDayIcon(response));
-      } else {
-        return null;
-      }
-    } catch (JSONException e) {
-      Log.e(TAG, "Failed to parse weather JSON.", e);
-      return null;
+    public Weather(Context context, UpdateListener<WeatherData> updateListener) {
+        super(updateListener, UPDATE_INTERVAL_MILLIS);
+        this.context = context;
     }
-  }
 
-  /**
-   * Creates the URL for a Dark Sky API request based on the specified {@link Location} or
-   * {@code null} if the location is unknown.
-   */
-  private String getRequestUrl(Location location) {
-    if (location != null) {
-      return String.format(Locale.US, "https://api.darksky.net/forecast/%s/%f,%f",
-          context.getString(R.string.dark_sky_api_key),
-          location.getLatitude(),
-          location.getLongitude());
-    } else {
-      return null;
+    @Override
+    protected WeatherData getData() {
+
+        Location location = getLocationForWeather();
+
+        String language = context.getString(R.string.language);
+        String units = getUnits();
+
+        // Get the latest data from the Dark Sky API.
+        String requestUrl = getRequestUrl(location, language, units);
+
+        // Parse the data we are interested in from the response JSON.
+        try {
+            //JSONObject response = Network.getJson(requestUrl);
+
+            JSONObject response = new JSONObject(Network.get(requestUrl));
+            if (response != null) {
+                return new WeatherData(
+                        parseCurrentTemperature(response),
+                        parseCurrentPrecipitationProbability(response),
+                        parseDaySummary(response),
+                        parseDayPrecipitationProbability(response),
+                        parseCurrentIcon(response),
+                        parseDayIcon(response));
+            } else {
+                return null;
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to parse weather JSON.", e);
+            return null;
+        }
     }
-  }
 
-  /**
-   * Reads the current temperature from the API response. API documentation:
-   * https://darksky.net/dev/docs
-   */
-  private Double parseCurrentTemperature(JSONObject response) throws JSONException {
-    JSONObject currently = response.getJSONObject("currently");
-    return currently.getDouble("temperature");
-  }
+    private Location getLocationForWeather() {
 
-  /**
-   * Reads the current precipitation probability from the API response. API documentation:
-   * https://darksky.net/dev/docs
-   */
-  private Double parseCurrentPrecipitationProbability(JSONObject response) throws JSONException {
-    JSONObject currently = response.getJSONObject("currently");
-    return currently.getDouble("precipProbability");
-  }
+        Location location = null;
 
-  /**
-   * Reads the 24-hour forecast summary from the API response. API documentation:
-   * https://darksky.net/dev/docs
-   */
-  private String parseDaySummary(JSONObject response) throws JSONException {
-    JSONObject hourly = response.getJSONObject("hourly");
-    return hourly.getString("summary");
-  }
+        // We're using geo location by IP, because many headless Android devices don't return anything
+        // useful through the usual location APIs.
+        try {
+            location = new Location("");
+            location.setLatitude(Double.parseDouble(context.getString(R.string.latitude)));
+            location.setLongitude(Double.parseDouble(context.getString(R.string.longitude)));
 
-  /**
-   * Reads the 24-hour forecast precipitation probability from the API response. API documentation:
-   * https://darksky.net/dev/docs
-   */
-  private Double parseDayPrecipitationProbability(JSONObject response) throws JSONException {
-    JSONObject hourly = response.getJSONObject("hourly");
-    JSONArray data = hourly.getJSONArray("data");
-
-    // Calculate the average over the whole day.
-    double sum = 0;
-    for (int i = 0; i < data.length(); i++) {
-      double probability = data.getJSONObject(i).getDouble("precipProbability");
-      sum += probability;
+        } catch (Exception e) {
+            //if no variables are set, look up the location without defaults
+            Log.e(TAG, "No (correct) latitude or longitude are found: " + e.getMessage());
+            location = GeoLocation.getLocation();
+        }
+        Log.d(TAG, "Using location for weather: " + location);
+        return location;
     }
-    return sum / data.length();
-  }
 
-  /**
-   * Reads the current weather icon code from the API response. API documentation:
-   * https://darksky.net/dev/docs
-   */
-  private Integer parseCurrentIcon(JSONObject response) throws JSONException {
-    JSONObject currently = response.getJSONObject("currently");
-    String icon = currently.getString("icon");
-    return iconResources.get(icon);
-  }
+    private String getUnits() {
 
-  /**
-   * Reads the 24-hour forecast weather icon code from the API response. API documentation:
-   * https://darksky.net/dev/docs
-   */
-  private Integer parseDayIcon(JSONObject response) throws JSONException {
-    JSONObject hourly = response.getJSONObject("hourly");
-    String icon = hourly.getString("icon");
-    return iconResources.get(icon);
-  }
+        //retrieve unit selector
+        String unitSelector = context.getString(R.string.units);
 
-  @Override
-  protected String getTag() {
-    return TAG;
-  }
+        if (unitSelector == null) {
+            return UNITS_AUTO;
+        }
+
+        switch(unitSelector) {
+            case CELCIUS:
+                return UNITS_SI;
+            case FAHRENHEIT:
+                return UNITS_US;
+            default:
+                return UNITS_AUTO;
+        }
+    }
+
+    /**
+     * Creates the URL for a Dark Sky API request based on the specified {@link Location} or
+     * {@code null} if the location is unknown.
+     */
+    private String getRequestUrl(Location location, String language, String units) {
+        if (location != null) {
+            return String.format(Locale.US, "https://api.darksky.net/forecast/%s/%f,%f?lang=%s&units=%s",
+                    context.getString(R.string.dark_sky_api_key),
+                    location.getLatitude(),
+                    location.getLongitude(),
+                    language,
+                    units);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Reads the current temperature from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private Double parseCurrentTemperature(JSONObject response) throws JSONException {
+        JSONObject currently = response.getJSONObject("currently");
+        return currently.getDouble("temperature");
+    }
+
+    /**
+     * Reads the current precipitation probability from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private Double parseCurrentPrecipitationProbability(JSONObject response) throws JSONException {
+        JSONObject currently = response.getJSONObject("currently");
+        return currently.getDouble("precipProbability");
+    }
+
+    /**
+     * Reads the 24-hour forecast summary from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private String parseDaySummary(JSONObject response) throws JSONException {
+        JSONObject hourly = response.getJSONObject("hourly");
+        return hourly.getString("summary");
+    }
+
+    /**
+     * Reads the 24-hour forecast precipitation probability from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private Double parseDayPrecipitationProbability(JSONObject response) throws JSONException {
+        JSONObject hourly = response.getJSONObject("hourly");
+        JSONArray data = hourly.getJSONArray("data");
+
+        // Calculate the average over the whole day.
+        double sum = 0;
+        for (int i = 0; i < data.length(); i++) {
+            double probability = data.getJSONObject(i).getDouble("precipProbability");
+            sum += probability;
+        }
+        return sum / data.length();
+    }
+
+    /**
+     * Reads the current weather icon code from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private Integer parseCurrentIcon(JSONObject response) throws JSONException {
+        JSONObject currently = response.getJSONObject("currently");
+        String icon = currently.getString("icon");
+        return iconResources.get(icon);
+    }
+
+    /**
+     * Reads the 24-hour forecast weather icon code from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private Integer parseDayIcon(JSONObject response) throws JSONException {
+        JSONObject hourly = response.getJSONObject("hourly");
+        String icon = hourly.getString("icon");
+        return iconResources.get(icon);
+    }
+
+    @Override
+    protected String getTag() {
+        return TAG;
+    }
 }
