@@ -202,8 +202,10 @@ public class Weather extends DataUpdater<WeatherData> {
    * https://darksky.net/dev/docs
    */
   private Double parseCurrentTemperature(JSONObject response) throws JSONException {
-    JSONObject currently = response.getJSONObject("currently");
-    return currently.getDouble("temperature");
+      JSONObject daily = response.getJSONObject("daily");
+      JSONArray data = daily.getJSONArray("data");
+      JSONObject today =  (JSONObject) data.get(0);
+      return today.getDouble("temperatureMax");
   }
 
   /**

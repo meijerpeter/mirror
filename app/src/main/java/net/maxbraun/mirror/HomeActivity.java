@@ -54,7 +54,7 @@ public class HomeActivity extends Activity {
 
                         // Populate the precipitation probability as a percentage rounded to a whole number.
                         String precipitation =
-                                String.format(Locale.US, "%d%%", Math.round(100 * data.dayPrecipitationProbability));
+                                String.format(Locale.US, "%d%%", Math.round(100 * data.currentPrecipitationProbability));
                         precipitationView.setText(precipitation);
 
                         // Populate the icon for the current weather.

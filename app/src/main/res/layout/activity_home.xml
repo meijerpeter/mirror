@@ -79,32 +79,33 @@
 
   <!-- News -->
   <LinearLayout
-      android:layout_width="wrap_content"
+      android:layout_width="700dp"
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
       android:layout_alignParentLeft="true"
       android:orientation="vertical">
+
     <TextView
         android:id="@+id/news_1"
         style="@style/NewsStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="@dimen/news_line_margin"
         android:drawableLeft="@drawable/news_ap"
         android:drawablePadding="@dimen/icon_margin"
-        tools:text="Obama, Sanders at the White House: Nice chat but that's all"/>
+        tools:text="Obama, Sanders at the White House: Nice chat but that's all" />
 
     <TextView
         android:id="@+id/news_2"
         style="@style/NewsStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="@dimen/news_line_margin"
         android:drawableLeft="@drawable/news_ap"
         android:drawablePadding="@dimen/icon_margin"
-        tools:text="Debate feud injects fresh chaos into GOP primary"/>
+        tools:text="Debate feud injects fresh chaos into GOP primary" />
 
     <TextView
         android:id="@+id/news_3"
@@ -142,24 +143,24 @@
     <TextView
         android:id="@+id/news_6"
         style="@style/NewsStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="@dimen/news_line_margin"
         android:drawableLeft="@drawable/news_ap"
         android:drawablePadding="@dimen/icon_margin"
-        tools:text="Rancher killed in standoff vowed to die before going to jail"/>
+        tools:text="Rancher killed in standoff vowed to die before going to jail" />
 
     <TextView
         android:id="@+id/news_7"
         style="@style/NewsStyle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:layout_marginBottom="@dimen/news_line_margin"
         android:drawableLeft="@drawable/news_ap"
         android:drawablePadding="@dimen/icon_margin"
-        tools:text="Authorities: Last activists should leave wildlife preserve"/>
+        tools:text="Authorities: Last activists should leave wildlife preserve" />
   </LinearLayout>
 
   <!-- Body -->
