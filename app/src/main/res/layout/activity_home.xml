@@ -52,7 +52,7 @@
       android:layout_marginTop="@dimen/precipitation_margin"
       android:drawableLeft="@drawable/umbrella"
       android:drawablePadding="@dimen/icon_margin"
-      tools:text="6%"/>
+      tools:text="6%" />
 
   <!-- Time and date -->
   <TextClock
@@ -65,6 +65,41 @@
       android:format12Hour="h\uee01mm"
       android:format24Hour="H\uee01mm"
       android:gravity="right"/>
+
+  <TextView
+      android:id="@+id/currentTemp"
+      style="@style/WeatherTextStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentStart="true"
+      android:layout_below="@+id/precipitation"
+      android:drawableLeft="@drawable/thermometer"
+      android:drawablePadding="@dimen/icon_margin"
+      tools:text="6%" />
+
+  <TextView
+      android:id="@+id/sunrise"
+      style="@style/WeatherTextStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignBaseline="@+id/precipitation"
+      android:layout_alignBottom="@+id/precipitation"
+      android:layout_marginStart="22dp"
+      android:layout_toEndOf="@+id/precipitation"
+      android:drawableLeft="@drawable/weather_sunset_up"
+      android:drawablePadding="@dimen/icon_margin"
+      tools:text="6%" />
+
+  <TextView
+      android:id="@+id/sunset"
+      style="@style/WeatherTextStyle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:drawableLeft="@drawable/weather_sunset_down"
+      android:drawablePadding="@dimen/icon_margin"
+      tools:text="6%"
+      android:layout_below="@+id/sunrise"
+      android:layout_alignStart="@+id/sunrise" />
 
   <TextClock
       android:id="@+id/date"

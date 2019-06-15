@@ -2,11 +2,11 @@
 
 <resources>
   <!-- Your home address in any reasonable format. -->
-  <string name="home">HOME_ADDRESS</string>
+  <string name="home">Kastanjeplein 123, Rotterdam, South Holland</string>
 
   <!-- Your work address in any reasonable format. -->
-  <string name="work">WORK_ADDRESS</string>
+  <string name="work">Larikslaan 192, Rotterdam, South Holland</string>
 
   <!-- Your travel mode: https://developers.google.com/maps/documentation/directions/intro#TravelModes -->
-  <string name="travel_mode">driving</string>
+  <string name="travel_mode">walking</string>
 </resources>

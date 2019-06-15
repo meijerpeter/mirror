@@ -15,6 +15,8 @@ import net.maxbraun.mirror.Commute.CommuteSummary;
 import net.maxbraun.mirror.DataUpdater.UpdateListener;
 import net.maxbraun.mirror.Weather.WeatherData;
 
+import org.w3c.dom.Text;
+
 /**
  * The main {@link Activity} class and entry point into the UI.
  */
@@ -43,10 +45,15 @@ public class HomeActivity extends Activity {
                 public void onUpdate(WeatherData data) {
                     if (data != null) {
 
-                        // Populate the current temperature rounded to a whole number.
+                        // Populate the max daily temperature rounded to a whole number.
                         String temperature = String.format(Locale.US, "%d°",
-                                Math.round(data.currentTemperature));
+                                Math.round(data.maxTemperature));
                         temperatureView.setText(temperature);
+
+                        // Populate the current temperature rounded to a whole number.
+                        String currentTemperature = String.format(Locale.US, "%d°",
+                                Math.round(data.currentTemperature));
+                        currentTemperatureView.setText(currentTemperature);
 
                         // Populate the 24-hour forecast summary, but strip any period at the end.
                         String summary = util.stripPeriod(data.daySummary);
@@ -57,6 +64,10 @@ public class HomeActivity extends Activity {
                                 String.format(Locale.US, "%d%%", Math.round(100 * data.currentPrecipitationProbability));
                         precipitationView.setText(precipitation);
 
+                        // Populate the sunset and sunrise time
+                        sunriseTime.setText(data.sunriseTime);
+                        sunsetTime.setText(data.sunsetTime);
+
                         // Populate the icon for the current weather.
                         iconView.setImageResource(data.currentIcon);
 
@@ -64,6 +75,9 @@ public class HomeActivity extends Activity {
                         temperatureView.setVisibility(View.VISIBLE);
                         weatherSummaryView.setVisibility(View.VISIBLE);
                         precipitationView.setVisibility(View.VISIBLE);
+                        currentTemperatureView.setVisibility(View.VISIBLE);
+                        sunsetTime.setVisibility(View.VISIBLE);
+                        sunriseTime.setVisibility(View.VISIBLE);
                         iconView.setVisibility(View.VISIBLE);
                     } else {
 
@@ -71,6 +85,9 @@ public class HomeActivity extends Activity {
                         temperatureView.setVisibility(View.GONE);
                         weatherSummaryView.setVisibility(View.GONE);
                         precipitationView.setVisibility(View.GONE);
+                        currentTemperatureView.setVisibility(View.GONE);
+                        sunsetTime.setVisibility(View.GONE);
+                        sunriseTime.setVisibility(View.GONE);
                         iconView.setVisibility(View.GONE);
                     }
                 }
@@ -141,6 +158,9 @@ public class HomeActivity extends Activity {
     private TextView temperatureView;
     private TextView weatherSummaryView;
     private TextView precipitationView;
+    private TextView currentTemperatureView;
+    private TextView sunriseTime;
+    private TextView sunsetTime;
     private ImageView iconView;
     private final TextView[] informationViews = new TextView[INFO_VIEW_IDS.length];
     private BodyView bodyView;
@@ -162,8 +182,11 @@ public class HomeActivity extends Activity {
         setContentView(R.layout.activity_home);
 
         temperatureView = (TextView) findViewById(R.id.temperature);
+        currentTemperatureView = (TextView) findViewById(R.id.currentTemp);
         weatherSummaryView = (TextView) findViewById(R.id.weather_summary);
         precipitationView = (TextView) findViewById(R.id.precipitation);
+        sunriseTime = (TextView) findViewById(R.id.sunrise);
+        sunsetTime = (TextView) findViewById(R.id.sunset);
         iconView = (ImageView) findViewById(R.id.icon);
         for (int i = 0; i < INFO_VIEW_IDS.length; i++) {
             informationViews[i] = (TextView) findViewById(INFO_VIEW_IDS[i]);

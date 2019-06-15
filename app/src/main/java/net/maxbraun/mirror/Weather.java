@@ -4,16 +4,18 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 
+import net.maxbraun.mirror.Weather.WeatherData;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import net.maxbraun.mirror.Weather.WeatherData;
 
 /**
  * A helper class to regularly retrieve weather information.
@@ -63,9 +65,14 @@ public class Weather extends DataUpdater<WeatherData> {
   public class WeatherData {
 
     /**
-     * The current temperature in degrees Fahrenheit.
+     * The current temperature in degrees Fahrenheit/Celcius.
      */
     public final double currentTemperature;
+
+      /**
+       * The maximum temperature in degrees Fahrenheit/Celcius.
+       */
+    public final double maxTemperature;
 
     /**
      * The current precipitation probability as a value between 0 and 1.
@@ -92,14 +99,29 @@ public class Weather extends DataUpdater<WeatherData> {
      */
     public final int dayIcon;
 
-    public WeatherData(double currentTemperature, double currentPrecipitationProbability,
-        String daySummary, double dayPrecipitationProbability, int currentIcon, int dayIcon) {
+    /**
+     * The time of sunrise.
+     */
+    public final String sunriseTime;
+
+      /**
+       * The time of sunset.
+       */
+      public final String sunsetTime;
+
+
+      public WeatherData(double currentTemperature, double maxTemperature, double currentPrecipitationProbability,
+        String daySummary, double dayPrecipitationProbability, int currentIcon, int dayIcon, String sunriseTime, String sunsetTime) {
+
       this.currentTemperature = currentTemperature;
+      this.maxTemperature = maxTemperature;
       this.currentPrecipitationProbability = currentPrecipitationProbability;
       this.daySummary = daySummary;
       this.dayPrecipitationProbability = dayPrecipitationProbability;
       this.currentIcon = currentIcon;
       this.dayIcon = dayIcon;
+      this.sunriseTime = sunriseTime;
+      this.sunsetTime = sunsetTime;
     }
   }
 
@@ -127,11 +149,14 @@ public class Weather extends DataUpdater<WeatherData> {
       if (response != null) {
         return new WeatherData(
             parseCurrentTemperature(response),
+            parseMaxTemperature(response),
             parseCurrentPrecipitationProbability(response),
             parseDaySummary(response),
             parseDayPrecipitationProbability(response),
             parseCurrentIcon(response),
-            parseDayIcon(response));
+            parseDayIcon(response),
+            parseSunriseTime(response),
+            parseSunsetTime(response));
       } else {
         return null;
       }
@@ -201,20 +226,31 @@ public class Weather extends DataUpdater<WeatherData> {
    * Reads the current temperature from the API response. API documentation:
    * https://darksky.net/dev/docs
    */
-  private Double parseCurrentTemperature(JSONObject response) throws JSONException {
+  private Double parseMaxTemperature(JSONObject response) throws JSONException {
       JSONObject daily = response.getJSONObject("daily");
       JSONArray data = daily.getJSONArray("data");
       JSONObject today =  (JSONObject) data.get(0);
       return today.getDouble("temperatureMax");
   }
 
+    /**
+     * Reads the current temperature from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private Double parseCurrentTemperature(JSONObject response) throws JSONException {
+        JSONObject currently = response.getJSONObject("currently");
+        return currently.getDouble("temperature");
+    }
+
   /**
    * Reads the current precipitation probability from the API response. API documentation:
    * https://darksky.net/dev/docs
    */
   private Double parseCurrentPrecipitationProbability(JSONObject response) throws JSONException {
-    JSONObject currently = response.getJSONObject("currently");
-    return currently.getDouble("precipProbability");
+    JSONObject daily = response.getJSONObject("daily");
+    JSONArray data = daily.getJSONArray("data");
+    JSONObject today =  (JSONObject) data.get(0);
+    return today.getDouble("precipProbability");
   }
 
   /**
@@ -263,7 +299,41 @@ public class Weather extends DataUpdater<WeatherData> {
     return iconResources.get(icon);
   }
 
-  @Override
+    /**
+     * Reads the sunrise time from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private String parseSunriseTime(JSONObject response) throws JSONException {
+        JSONObject daily = response.getJSONObject("daily");
+        JSONArray data = daily.getJSONArray("data");
+        JSONObject today =  (JSONObject) data.get(0);
+        SimpleDateFormat format = new SimpleDateFormat("H:mm");
+        format.setTimeZone(java.util.TimeZone.getTimeZone(response.getString("timezone")));
+
+        Date date = new Date(today.getInt("sunriseTime")*1000L);
+
+        return format.format(date);
+    }
+
+    /**
+     * Reads the sunset time from the API response. API documentation:
+     * https://darksky.net/dev/docs
+     */
+    private String parseSunsetTime(JSONObject response) throws JSONException {
+        JSONObject daily = response.getJSONObject("daily");
+        JSONArray data = daily.getJSONArray("data");
+        JSONObject today =  (JSONObject) data.get(0);
+        SimpleDateFormat format = new SimpleDateFormat("H:mm");
+        format.setTimeZone(java.util.TimeZone.getTimeZone(response.getString("timezone")));
+
+        Date date = new Date(today.getInt("sunsetTime")*1000L);
+
+        return format.format(date);
+    }
+
+
+
+    @Override
   protected String getTag() {
     return TAG;
   }
